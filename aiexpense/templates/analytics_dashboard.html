@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Analytics & Predictions - AI Expense Manager</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        header h1 {
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 15px;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            transition: background 0.3s;
+            font-weight: 600;
+        }
+
+        .nav-links a:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .logout-btn {
+            background: #e64c4c;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .logout-btn:hover {
+            background: #cc3f3f;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .status-box {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin: 20px 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .status-box.error {
+            color: #d32f2f;
+            border-left: 5px solid #d32f2f;
+        }
+
+        .status-box.info {
+            color: #1976d2;
+            border-left: 5px solid #1976d2;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            border-top: 4px solid #667eea;
+        }
+
+        .card h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+
+        .card.highlight {
+            border-top-color: #4caf50;
+            background: linear-gradient(135deg, #f5f7fa 0%, #fffbf0 100%);
+        }
+
+        .stat-number {
+            font-size: 32px;
+            font-weight: 700;
+            color: #667eea;
+            margin: 10px 0;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .comparison {
+            display: flex;
+            justify-content: space-around;
+            margin: 15px 0;
+        }
+
+        .comparison-item {
+            text-align: center;
+        }
+
+        .comparison-value {
+            font-size: 24px;
+            font-weight: 700;
+            margin: 5px 0;
+        }
+
+        .comparison-label {
+            font-size: 12px;
+            color: #999;
+            text-transform: uppercase;
+        }
+
+        .percentage {
+            font-size: 16px;
+            margin-top: 10px;
+            font-weight: 700;
+        }
+
+        .percentage.up {
+            color: #d32f2f;
+        }
+
+        .percentage.down {
+            color: #4caf50;
+        }
+
+        .insight {
+            padding: 15px;
+            margin-bottom: 12px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .insight.success {
+            background: #e8f5e9;
+            border-left-color: #4caf50;
+        }
+
+        .insight.warning {
+            background: #fff3e0;
+            border-left-color: #ff9800;
+        }
+
+        .insight.alert {
+            background: #ffebee;
+            border-left-color: #d32f2f;
+        }
+
+        .insight.info {
+            background: #e3f2fd;
+            border-left-color: #1976d2;
+        }
+
+        .insight-title {
+            font-weight: 700;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        .insight-message {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.4;
+        }
+
+        .chart-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .chart-container img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+
+        .prediction-list {
+            list-style: none;
+        }
+
+        .prediction-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .prediction-item:last-child {
+            border-bottom: none;
+        }
+
+        .prediction-date {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .prediction-amount {
+            color: #667eea;
+            font-weight: 700;
+            font-size: 16px;
+        }
+
+        .category-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .category-item:last-child {
+            border-bottom: none;
+        }
+
+        .category-name {
+            color: #333;
+            font-weight: 600;
+        }
+
+        .category-amount {
+            color: #667eea;
+            font-weight: 700;
+        }
+
+        .anomaly-item {
+            background: #fff3cd;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 6px;
+            border-left: 4px solid #ffc107;
+        }
+
+        .anomaly-date {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .anomaly-amount {
+            color: #ff6b6b;
+            font-weight: 700;
+        }
+
+        @media (max-width: 1024px) {
+            .grid-3 {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .grid-3 {
+                grid-template-columns: 1fr;
+            }
+
+            header {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            header h1 {
+                font-size: 20px;
+            }
+
+            .nav-links {
+                width: 100%;
+                justify-content: space-between;
+            }
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: white;
+            text-decoration: none;
+            background: #667eea;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+
+        .back-link:hover {
+            background: #764ba2;
+        }
+
+        .section-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #333;
+            margin: 30px 0 20px 0;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #999;
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .badge.high {
+            background: #ffebee;
+            color: #d32f2f;
+        }
+
+        .badge.low {
+            background: #e8f5e9;
+            color: #4caf50;
+        }
+
+        /* ====== TAB STYLING ====== */
+        .tabs-container {
+            margin: 30px 0;
+        }
+
+        .tab-buttons {
+            display: flex;
+            gap: 10px;
+            background: white;
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            padding: 12px 20px;
+            border: none;
+            background: #f0f0f0;
+            color: #333;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+
+        .tab-btn:hover {
+            background: #e0e0e0;
+            transform: translateY(-2px);
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .prediction-hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px;
+            border-radius: 12px;
+            color: white;
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .prediction-hero .label {
+            font-size: 16px;
+            opacity: 0.9;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .prediction-hero .amount {
+            font-size: 56px;
+            font-weight: 800;
+            margin-bottom: 12px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .prediction-hero .basis {
+            font-size: 13px;
+            opacity: 0.85;
+            line-height: 1.5;
+        }
+
+        .prediction-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .prediction-detail-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .prediction-detail-label {
+            font-size: 12px;
+            color: #999;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .prediction-detail-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        @media (max-width: 768px) {
+            .tab-buttons {
+                gap: 5px;
+            }
+
+            .tab-btn {
+                padding: 10px 12px;
+                font-size: 12px;
+            }
+
+            .prediction-hero {
+                padding: 30px 20px;
+            }
+
+            .prediction-hero .amount {
+                font-size: 42px;
+            }
+
+            .prediction-details {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>📊 Analytics & Predictions</h1>
+    <div class="nav-links">
+        <a href="/dashboard/">💼 Dashboard</a>
+        <a href="/logout/" class="logout-btn">Logout</a>
+    </div>
+</header>
+
+<div class="container">
+
+    <!-- Status Messages -->
+    {% if analytics.status == 'error' %}
+    <div class="status-box error">
+        <strong>⚠️ Error:</strong> {{ analytics.message }}
+    </div>
+    {% elif analytics.status == 'insufficient_data' %}
+    <div class="status-box info">
+        <strong>ℹ️ Note:</strong> {{ analytics.message }}
+        <p style="margin-top: 10px; font-size: 14px;">Add more expenses to get personalized insights and predictions.</p>
+    </div>
+    {% else %}
+
+    <!-- TAB NAVIGATION -->
+    <div class="tabs-container">
+        <div class="tab-buttons">
+            <button class="tab-btn active" onclick="switchTab('predictions')">🔮 Predictions</button>
+            <button class="tab-btn" onclick="switchTab('overview')">📈 Overview</button>
+            <button class="tab-btn" onclick="switchTab('insights')">💡 Insights</button>
+            <button class="tab-btn" onclick="switchTab('charts')">📉 Charts</button>
+        </div>
+    </div>
+
+    <!-- ===== TAB 1: PREDICTIONS ===== -->
+    <div id="predictions" class="tab-content active">
+        {% if analytics.predictions %}
+        <div class="prediction-hero">
+            <div class="label">
+                📊 Estimated Spending for {% if analytics.predictions.0.date %}{{ analytics.predictions.0.date }}{% else %}Next Month{% endif %}
+            </div>
+            <div class="amount">
+                ₹{{ analytics.predictions.0.amount|floatformat:0 }}
+            </div>
+            {% if analytics.predictions.0.basis %}
+            <div class="basis">{{ analytics.predictions.0.basis }}</div>
+            {% endif %}
+        </div>
+
+        <!-- Prediction Details -->
+        <h2 class="section-title">📋 Prediction Details</h2>
+        <div class="card">
+            <div class="prediction-details">
+                <div class="prediction-detail-card">
+                    <div class="prediction-detail-label">Prediction Method</div>
+                    <div class="prediction-detail-value">Advanced ML</div>
+                </div>
+                <div class="prediction-detail-card">
+                    <div class="prediction-detail-label">Data Points</div>
+                    <div class="prediction-detail-value">3-6 Months</div>
+                </div>
+                <div class="prediction-detail-card">
+                    <div class="prediction-detail-label">Accuracy</div>
+                    <div class="prediction-detail-value">High</div>
+                </div>
+            </div>
+            <div style="margin-top: 20px; padding: 15px; background: #f5f5f5; border-radius: 6px; font-size: 13px; color: #555; line-height: 1.6;">
+                <strong>How it works:</strong> This prediction uses exponential smoothing, trend analysis, and outlier detection on your historical spending data. The algorithm weighs recent months more heavily and automatically adjusts for spending trends. Outliers (unusual expenses) are excluded to provide more accurate predictions.
+            </div>
+        </div>
+
+        <!-- Comparison with History -->
+        <h2 class="section-title">📊 Historical Comparison</h2>
+        <div class="card">
+            <div class="comparison">
+                <div class="comparison-item">
+                    <div class="comparison-label">Next Month (Predicted)</div>
+                    <div class="comparison-value">₹{{ analytics.predictions.0.amount|floatformat:0 }}</div>
+                </div>
+                <div class="comparison-item">
+                    <div class="comparison-label">This Month</div>
+                    <div class="comparison-value">₹{{ analytics.current_month.total }}</div>
+                </div>
+                <div class="comparison-item">
+                    <div class="comparison-label">Average Monthly</div>
+                    <div class="comparison-value">₹{{ analytics.average_monthly }}</div>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <div class="empty-state-icon">📊</div>
+            <h3>No Predictions Available</h3>
+            <p style="margin-top: 10px;">Add more expenses to generate predictions for next month.</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- ===== TAB 2: OVERVIEW ===== -->
+    <div id="overview" class="tab-content">
+        <!-- Key Statistics -->
+        <h2 class="section-title">📈 Key Statistics</h2>
+        <div class="grid-3">
+            <div class="card highlight">
+                <div class="stat-label">Current Month</div>
+                <div class="stat-number">₹{{ analytics.current_month.total }}</div>
+                <div style="color: #999; font-size: 12px;">{{ analytics.current_month.current_month }}</div>
+            </div>
+
+            <div class="card">
+                <div class="stat-label">Total Expenses (All Time)</div>
+                <div class="stat-number">₹{{ analytics.total_expenses }}</div>
+                <div style="color: #999; font-size: 12px;">Combined</div>
+            </div>
+
+            <div class="card">
+                <div class="stat-label">Average Monthly</div>
+                <div class="stat-number">₹{{ analytics.average_monthly }}</div>
+                <div style="color: #999; font-size: 12px;">Historical Avg</div>
+            </div>
+        </div>
+
+        <!-- Month over Month Comparison -->
+        <h2 class="section-title">📊 Month-over-Month Comparison</h2>
+        <div class="card">
+            <div class="comparison">
+                <div class="comparison-item">
+                    <div class="comparison-label">This Month</div>
+                    <div class="comparison-value">₹{{ analytics.month_over_month.current }}</div>
+                </div>
+                <div class="comparison-item">
+                    <div class="comparison-label">Last Month</div>
+                    <div class="comparison-value">₹{{ analytics.month_over_month.previous }}</div>
+                </div>
+                <div class="comparison-item">
+                    <div class="comparison-label">Change</div>
+                    <div class="percentage {% if analytics.month_over_month.direction == 'up' %}up{% else %}down{% endif %}">
+                        {% if analytics.month_over_month.direction == 'up' %}↑{% else %}↓{% endif %}
+                        {% if analytics.month_over_month.percentage_change < 0 %}
+                            {{ analytics.month_over_month.percentage_change|stringformat:".1f" }}
+                        {% else %}
+                            {{ analytics.month_over_month.percentage_change|stringformat:".1f" }}
+                        {% endif %}%
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Category Breakdown -->
+        {% if analytics.category_breakdown %}
+        <h2 class="section-title">💰 Spending by Category (This Month)</h2>
+        <div class="card">
+            {% for category in analytics.category_breakdown %}
+            <div class="category-item">
+                <span class="category-name">{{ category.category }}</span>
+                <span class="category-amount">₹{{ category.total }}</span>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- ===== TAB 3: INSIGHTS ===== -->
+    <div id="insights" class="tab-content">
+        <!-- Insights -->
+        {% if analytics.insights %}
+        <h2 class="section-title">💡 Spending Insights</h2>
+        <div class="card">
+            {% for insight in analytics.insights %}
+            <div class="insight {{ insight.type }}">
+                <div class="insight-title">{{ insight.title }}</div>
+                <div class="insight-message">{{ insight.message }}</div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Anomalies -->
+        {% if analytics.anomalies %}
+        <h2 class="section-title">⚠️ Unusual Spending Detected</h2>
+        <div class="card">
+            {% for anomaly in analytics.anomalies %}
+            <div class="anomaly-item">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span class="anomaly-date">
+                        {{ anomaly.date }}
+                        <span class="badge {% if anomaly.status == 'High' %}high{% else %}low{% endif %}">{{ anomaly.status }}</span>
+                    </span>
+                    <span class="anomaly-amount">₹{{ anomaly.amount }}</span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <div class="empty-state-icon">✨</div>
+            <h3>No Anomalies Detected</h3>
+            <p style="margin-top: 10px;">Your spending patterns look normal and healthy!</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- ===== TAB 4: CHARTS ===== -->
+    <div id="charts" class="tab-content">
+        <h2 class="section-title">📉 Visualizations</h2>
+
+        {% if analytics.charts.monthly_trend %}
+        <div class="chart-container">
+            <h3 style="margin-bottom: 15px; color: #333;">Monthly Expense Trend</h3>
+            <img src="{{ analytics.charts.monthly_trend }}" alt="Monthly Trend Chart">
+        </div>
+        {% endif %}
+
+        <div class="grid-2">
+            {% if analytics.charts.category_pie %}
+            <div class="chart-container">
+                <h3 style="margin-bottom: 15px; color: #333;">Category Distribution</h3>
+                <img src="{{ analytics.charts.category_pie }}" alt="Category Pie Chart">
+            </div>
+            {% endif %}
+
+            {% if analytics.charts.last_6_months %}
+            <div class="chart-container">
+                <h3 style="margin-bottom: 15px; color: #333;">Last 6 Months</h3>
+                <img src="{{ analytics.charts.last_6_months }}" alt="Last 6 Months Chart">
+            </div>
+            {% endif %}
+        </div>
+
+        {% if not analytics.charts.monthly_trend and not analytics.charts.category_pie and not analytics.charts.last_6_months %}
+        <div class="empty-state">
+            <div class="empty-state-icon">📊</div>
+            <h3>No Charts Available</h3>
+            <p style="margin-top: 10px;">Add more expenses to generate visualizations.</p>
+        </div>
+        {% endif %}
+    </div>
+
+    {% endif %}
+
+</div>
+
+<script>
+    function switchTab(tabName) {
+        // Hide all tab contents
+        const tabContents = document.querySelectorAll('.tab-content');
+        tabContents.forEach(tab => {
+            tab.classList.remove('active');
+        });
+
+        // Remove active class from all buttons
+        const tabButtons = document.querySelectorAll('.tab-btn');
+        tabButtons.forEach(btn => {
+            btn.classList.remove('active');
+        });
+
+        // Show selected tab
+        const selectedTab = document.getElementById(tabName);
+        if (selectedTab) {
+            selectedTab.classList.add('active');
+        }
+
+        // Highlight active button
+        event.target.classList.add('active');
+
+        // Store preference in localStorage
+        localStorage.setItem('activeTab', tabName);
+    }
+
+    // Restore last active tab on page load
+    window.addEventListener('DOMContentLoaded', function() {
+        const lastTab = localStorage.getItem('activeTab') || 'predictions';
+        const tabBtn = document.querySelector(`[onclick="switchTab('${lastTab}')"]`);
+        if (tabBtn) {
+            tabBtn.click();
+        }
+    });
+</script>
+
+</body>
+
+</html>

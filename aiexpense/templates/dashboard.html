@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard - AI Expense Manager</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #f8f9fa;
+            min-height: 100vh;
+            padding-bottom: 40px;
+        }
+
+        /* HEADER */
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 24px 20px;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.25);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        header h1 {
+            font-size: 26px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .header-nav {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            padding: 10px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-analytics {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .nav-analytics:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .nav-logout {
+            background: #e63946;
+        }
+
+        .nav-logout:hover {
+            background: #d62828;
+            transform: translateY(-2px);
+        }
+
+        /* MAIN CONTAINER */
+        .container {
+            width: 90%;
+            max-width: 1100px;
+            margin: 40px auto;
+        }
+
+        .greeting {
+            color: #1f2937;
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        .greeting-subtitle {
+            color: #6b7280;
+            font-size: 16px;
+            margin-bottom: 30px;
+            font-weight: 500;
+        }
+
+        /* MESSAGES */
+        .alert-box {
+            background: white;
+            padding: 14px 18px;
+            margin-bottom: 20px;
+            border-left: 4px solid #667eea;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            color: #374151;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        /* CARDS */
+        .card {
+            background: white;
+            padding: 28px;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+            margin-bottom: 24px;
+            border-top: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+            transform: translateY(-3px);
+        }
+
+        .card h2 {
+            color: #1f2937;
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* TOTAL EXPENSE CARD */
+        .card-overview {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);
+        }
+
+        .card-overview:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(102, 126, 234, 0.4);
+        }
+
+        .card-overview h2 {
+            color: rgba(255, 255, 255, 0.95);
+            font-size: 16px;
+            margin-bottom: 12px;
+        }
+
+        .total-amount {
+            font-size: 52px;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 8px;
+            letter-spacing: -1px;
+        }
+
+        .total-label {
+            font-size: 13px;
+            opacity: 0.9;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        /* ACTION BUTTONS */
+        .button-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        button, .btn {
+            padding: 15px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:active {
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: #f3f4f6;
+            color: #1f2937;
+            border: 2px solid #667eea;
+            font-weight: 700;
+        }
+
+        .btn-secondary:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        /* FORMS */
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 700;
+            color: #1f2937;
+            font-size: 14px;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="date"],
+        select {
+            width: 100%;
+            padding: 12px 14px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            background: white;
+            color: #1f2937;
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-hint {
+            font-size: 13px;
+            color: #9ca3af;
+            margin-top: 6px;
+            font-weight: 500;
+        }
+
+        /* EXPENSES TABLE */
+        .expenses-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        .expenses-table thead tr {
+            background: #f9fafb;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        .expenses-table th {
+            padding: 12px 14px;
+            text-align: left;
+            font-weight: 700;
+            color: #374151;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .expenses-table td {
+            padding: 13px 14px;
+            border-bottom: 1px solid #e9ecef;
+            font-size: 14px;
+            color: #1f2937;
+        }
+
+        .expenses-table tbody tr:hover {
+            background: #f9fafb;
+        }
+
+        .expense-title {
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        .expense-category {
+            display: inline-block;
+            background: #e8eaf6;
+            color: #667eea;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .expense-amount {
+            font-weight: 800;
+            color: #667eea;
+            text-align: right;
+            font-size: 15px;
+        }
+
+        .expense-date {
+            color: #9ca3af;
+            font-size: 13px;
+        }
+
+        .action-links {
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-links a {
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .action-edit {
+            color: #667eea;
+            background: #e8eaf6;
+        }
+
+        .action-edit:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        .action-delete {
+            color: #e63946;
+            background: #ffebee;
+        }
+
+        .action-delete:hover {
+            background: #e63946;
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        /* EMPTY STATE */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #9ca3af;
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+            opacity: 0.6;
+        }
+
+        .empty-state-text {
+            font-size: 16px;
+            color: #6b7280;
+            font-weight: 500;
+        }
+
+        /* OCR SECTION */
+        .ocr-section {
+            background: #f9fafb;
+            border-left: 4px solid #667eea;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .ocr-text {
+            background: white;
+            padding: 14px;
+            border-radius: 6px;
+            max-height: 200px;
+            overflow-y: auto;
+            font-size: 12px;
+            color: #374151;
+            font-family: 'Monaco', 'Courier New', monospace;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .container {
+                width: 95%;
+                margin: 20px auto;
+            }
+
+            header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            header h1 {
+                font-size: 22px;
+            }
+
+            .greeting {
+                font-size: 24px;
+                margin-bottom: 6px;
+            }
+
+            .greeting-subtitle {
+                margin-bottom: 20px;
+            }
+
+            .total-amount {
+                font-size: 38px;
+            }
+
+            .button-group {
+                grid-template-columns: 1fr;
+            }
+
+            .expenses-table thead {
+                display: none;
+            }
+
+            .expenses-table tbody tr {
+                display: block;
+                margin-bottom: 15px;
+                border: 1px solid #e5e7eb;
+                border-radius: 8px;
+                padding: 12px;
+            }
+
+            .expenses-table td {
+                display: block;
+                text-align: right;
+                padding-left: 50%;
+                position: relative;
+                border: none;
+                padding-bottom: 8px;
+            }
+
+            .expenses-table td:before {
+                content: attr(data-label);
+                position: absolute;
+                left: 12px;
+                font-weight: 700;
+                color: #374151;
+            }
+
+            .expense-amount {
+                text-align: right;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>💰 AI Expense Manager</h1>
+    <div class="header-nav">
+        <a href="/analytics/" class="nav-link nav-analytics">📊 Analytics</a>
+        <a href="/logout/" class="nav-link nav-logout">Logout</a>
+    </div>
+</header>
+
+<div class="container">
+
+    <div class="greeting">Welcome back, {{ request.user.first_name }}! 👋</div>
+    <div class="greeting-subtitle">Manage your expenses with AI-powered insights</div>
+
+    {% if messages %}
+    {% for message in messages %}
+    <div class="alert-box">{{ message }}</div>
+    {% endfor %}
+    {% endif %}
+
+    <!-- ACTION BUTTONS -->
+    <div class="button-group">
+        <form method="GET" style="display: flex;">
+            <button type="button" class="btn btn-primary" onclick="scrollToForm('add-form')">
+                ➕ Add Expense
+            </button>
+        </form>
+        <button type="button" class="btn btn-secondary" onclick="scrollToForm('scan-form')">
+            📸 Scan Receipt
+        </button>
+    </div>
+
+    <!-- SCAN RECEIPT FORM -->
+    <div class="card" id="scan-form">
+        <h2>📸 Scan Receipt (AI-Powered)</h2>
+        <form method="POST" action="/scan-receipt/" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="receipt-upload">Upload Receipt Image</label>
+                <input type="file" id="receipt-upload" name="receipt" accept="image/*" required>
+                <div class="form-hint">Upload a clear photo of your receipt. The system will auto-detect amount, date & category.</div>
+            </div>
+            <button type="submit" class="btn btn-primary" style="width: 100%;">
+                🔍 Scan Receipt
+            </button>
+        </form>
+    </div>
+
+    <!-- EXTRACTED OCR TEXT (if available) -->
+    {% if ocr_text %}
+    <div class="card">
+        <h2>✓ Receipt Extracted</h2>
+        <div class="ocr-section">
+            <div class="ocr-text">{{ ocr_text }}</div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- ADD EXPENSE FORM -->
+    <div class="card" id="add-form">
+        <h2>➕ Add New Expense</h2>
+        <form method="POST" action="/add-expense/">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label for="title">Expense Title</label>
+                <input type="text" id="title" name="title" placeholder="e.g., Grocery Shopping, Uber Ride"
+                       value="{{ merchant_name|default:'' }}" required>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div class="form-group">
+                    <label for="amount">Amount (₹)</label>
+                    <input type="number" id="amount" name="amount" step="0.01" placeholder="Amount"
+                           value="{{ detected_amount|default:'' }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="category">Category</label>
+                    <input type="text" id="category" name="category" placeholder="e.g., Food, Travel, Shopping"
+                           value="{{ detected_category|default:'' }}" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="date">Date</label>
+                <input type="date" id="date" name="date"
+                       value="{{ detected_date|default:'' }}" required>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width: 100%;">
+                Save Expense
+            </button>
+        </form>
+    </div>
+
+    <!-- RECENT EXPENSES -->
+    <div class="card">
+        <h2>📋 Recent Expenses</h2>
+
+        {% if expenses %}
+        <table class="expenses-table">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Category</th>
+                    <th style="text-align: right;">Amount</th>
+                    <th style="text-align: center;">Date</th>
+                    <th style="text-align: center;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for expense in expenses %}
+                <tr>
+                    <td data-label="Title" class="expense-title">{{ expense.title }}</td>
+                    <td data-label="Category">
+                        <span class="expense-category">{{ expense.category }}</span>
+                    </td>
+                    <td data-label="Amount" class="expense-amount">₹{{ expense.amount|floatformat:2 }}</td>
+                    <td data-label="Date" class="expense-date" style="text-align: center;">{{ expense.date }}</td>
+                    <td style="text-align: center;">
+                        <div class="action-links">
+                            <a href="/edit-expense/{{ expense.id }}/" class="action-edit">Edit</a>
+                            <a href="/delete-expense/{{ expense.id }}/"
+                               onclick="return confirm('Are you sure? This cannot be undone.');"
+                               class="action-delete">Delete</a>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="empty-state">
+            <div class="empty-state-icon">📭</div>
+            <div class="empty-state-text">No expenses yet. Start by adding your first expense!</div>
+        </div>
+        {% endif %}
+    </div>
+
+</div>
+
+<script>
+    function scrollToForm(formId) {
+        const element = document.getElementById(formId);
+        if (element) {
+            element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            element.querySelector('input, button') && element.querySelector('input, button').focus();
+        }
+    }
+</script>
+
+</body>
+</html>

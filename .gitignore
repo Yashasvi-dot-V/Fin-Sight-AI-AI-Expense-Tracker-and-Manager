@@ -1,0 +1,13 @@
+﻿venv/
+__pycache__/
+*.pyc
+db.sqlite3
+*.sqlite3
+.env
+.vscode/
+media/
+*.log
+tempCodeRunnerFile.py
+check_sumati.py
+check_users.py
+debug_prediction.py
